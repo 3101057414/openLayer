@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Simple Map</title>
+    <link rel="stylesheet" href="../v5.3.0/css/ol.css" />
+    <script src="../v5.3.0/build/ol.js"></script>
+</head>
+<body>
+    <div id="controls">
+        <input type="checkbox" name="OpenStreetMap" id="osm">
+        <input type="checkbox" id="bingmap">
+        <input type="checkbox" id="stamen">
+    </div>
+    <div id="map"></div>
+ 
+    <script>
+        let map = new ol.Map({
+            target: 'map',                          // 关联到对应的div容器
+            layers: [
+                new ol.layer.Tile({                 // 瓦片图层
+                    source: new ol.source.OSM()     // OpenStreetMap数据源
+                }),
+                new ol.layer.Tile({
+                    source: new ol.source.BingMaps({
+                        key:'AlMctIpNu_eyVYdWiWyBGOR--_I0zKOT7JL2juNZt4BNu8dPAFHkfE16dVuRjBSv',
+                        imagerySet: 'Aerial'
+                    }),
+                    visble: false
+                }),
+                new ol.layer.Tile({
+                    source: new ol.source.Stamen({
+                        layer: 'watercolor'
+                    }),
+                    visible: false
+                }),
+            ],
+            view: new ol.View({                     // 地图视图
+                projection: 'EPSG:3857',
+                center: [0, 0],
+                zoom: 0
+            })
+        });
+
+        let controls = document.getElementById('controls');
+        //连接创建的节点
+        controls.addEventListener('click', (event)=>{
+            if(event.target.checked){
+                switch(event.target.id){
+                    case "osm": 
+                        map.getLayers().item(0).setVisible(true);
+                        break;
+                    case "bingmap":
+                        map.getLayers().item(1).setVisible(true);
+                        break;
+                    case "stamen": 
+                        map.getLayers().item(2).setVisible(true);
+                        break;
+                    default: break;
+                }
+            }//判断已选择的DOM元素
+            else{                                         // 如果取消某一复选框
+                // 通过DOM元素的id值来判断应该对哪个图层进行隐藏
+                switch(event.target.id){
+                    case "osm": 
+                        map.getLayers().item(0).setVisible(false);
+                        break;
+                    case "bingmap":
+                        map.getLayers().item(1).setVisible(false);
+                    case "stamen": 
+                        map.getLayers().item(2).setVisible(false);
+                    default: break;
+                }
+            } 
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Simple Map</title>
+    <link rel="stylesheet" href="../v5.3.0/css/ol.css" />
+    <script src="../v5.3.0/build/ol.js"></script>
+</head>
+<body>
+    <div id="map"></div>
+    <label>Shape type &nbsp;</label>
+    <select id="type">
+        <option value="Point">Point</option>
+        <option value="LineString">LineString</option>
+        <option value="Polygon">Polygon</option>
+        <option value="Circle">Circle</option>
+    </select>
+ 
+    <script>
+        let vectorSource = new ol.source.Vector();
+        let vectorLayer = new ol.layer.Vector({
+            source: vectorSource,
+        })
+
+        let map = new ol.Map({
+            target: 'map',
+            layers:[
+                new ol.layer.Tile({
+                    source: new ol.source.OSM()
+                }),
+                vectorLayer
+            ],
+            view: new ol.View({
+                projection: 'EPSG:3857',
+                center:[0, 0],
+                zoom: 5
+            })
+        })
+
+        let modify = new ol.interaction.Modify({
+            source: vectorSource
+        })
+        map.addInteraction(modify);
+
+        let typeSelect = document.getElementById('type');
+        let draw, snap;
+        function addInteraction(){
+            let type = typeSelect.value;
+
+            draw = new ol.interaction.Draw({
+            source: vectorSource,
+            type: type
+            });
+            // 将Draw绘图控件加入Map对象
+            map.addInteraction(draw);
+
+            // 创建一个Snap控件，并加入到Map对象中
+            snap = new ol.interaction.Snap({
+                source: vectorSource
+            });
+            map.addInteraction(snap);
+        }
+ 
+        typeSelect.addEventListener('click', () => {
+            // 移除Draw绘图控件
+            map.removeInteraction(draw);
+            map.removeInteraction(snap);
+            addInteraction();
+        });
+ 
+        addInteraction();
+    </script>
+</body>
+</html>
